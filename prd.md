@@ -1,6 +1,6 @@
-# Product Requirements Document — BidFlow
+# Product Requirements Document — ReverseBid
 
-> Working name: **BidFlow**
+> Working name: **ReverseBid**
 > Product category: B2B eSourcing / RFQ / Reverse Auction SaaS
 > Target platform: Web
 > Primary stack: Next.js, React, Prisma, PostgreSQL
@@ -10,7 +10,7 @@
 
 ## 1. Product Summary
 
-BidFlow is a lightweight B2B eSourcing platform for procurement teams that currently manage supplier quotations through Excel, email, WhatsApp, and manual comparison sheets.
+ReverseBid is a lightweight B2B eSourcing platform for procurement teams that currently manage supplier quotations through Excel, email, WhatsApp, and manual comparison sheets.
 
 The product allows buyers to:
 
@@ -27,7 +27,7 @@ The product allows buyers to:
 
 > Turn your Excel-based vendor quotation process into an auditable sourcing event in minutes.
 
-BidFlow is **not** intended to be a full ERP, payment platform, or enterprise procurement suite in the first versions.
+ReverseBid is **not** intended to be a full ERP, payment platform, or enterprise procurement suite in the first versions.
 
 The initial wedge is:
 
@@ -721,7 +721,7 @@ Agents must not add these unless specifically requested.
 
 ## 19. Legal / Compliance Guardrails
 
-BidFlow is a sourcing facilitation platform.
+ReverseBid is a sourcing facilitation platform.
 
 It should not be represented as:
 

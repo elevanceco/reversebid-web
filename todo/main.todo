@@ -1,0 +1,21 @@
+UI:
+    ☐ navbar keren sih kalo di section paling atasnya masih dark mode, ikutin herosection, tapi pas redirect ke bagian section yang light mode, transition smooth dia ke warna light mode juga.
+    ☐ How it works section bisa kasih animasi live demo aslinya nanti
+    ☐ add loading screen global
+
+Auth:
+    ✔ replace auth state di navbar @done(26-10-11 15:29)
+    ✔ saat login, cek user udah verified atau belum, skrg langsung ke dashboard @started(26-10-11 15:29) @done(26-10-11 15:31) @lasted(2m28s)
+    ✔ saat verify email, buatin fallback error untuk token expired dan error2 lainnya. @started(26-10-11 15:31) @done(26-10-11 16:02) @lasted(31m36s)
+    ✔ forgot password email @done(26-10-11 17:04)
+    ✔ reset password @started(26-10-11 17:05) @done(26-10-11 17:06) @lasted(1m7s)
+
+Onboarding:
+    ✔ workspace url buatannya ada error Lowercase letters, numbers, and hyphens only @done(26-10-11 17:04)
+    ✔ save action @started(26-10-12 12:34) @done(26-10-12 18:26) @lasted(5h52m34s)
+
+Dashboard:
+    ✔ jika user belum buat workspace, redirect ke onboarding @done(26-10-12 12:33)
+    ☐ sementara lagi pake mock data untuk data2 eventnya. nanti jangan lupa ganti @critical
+    ✔ fix UI dashboard @started(26-10-12 18:26) @done(26-10-12 18:37) @lasted(11m44s)
+
