@@ -1,4 +1,4 @@
-# Implementation Plan — BidFlow SLC
+# Implementation Plan — ReverseBid SLC
 
 > This document is intended for AI coding agents and developers.
 > Follow phases in order.
@@ -1201,7 +1201,7 @@ Use a modular monolith.
 
 # 31. Coding Agent Rules
 
-When working on BidFlow:
+When working on ReverseBid:
 
 1. Read `prd.md`.
 2. Read `plan.md`.

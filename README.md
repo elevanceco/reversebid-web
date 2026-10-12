@@ -1,4 +1,4 @@
-# BidFlow
+# ReverseBid
 
 > **Lightweight eSourcing for modern procurement teams.**  
 > Turn Excel, email, and WhatsApp-based supplier quotations into structured RFQs, live reverse auctions, and auditable sourcing events.
@@ -7,7 +7,7 @@
 
 ## Overview
 
-**BidFlow** is a B2B eSourcing SaaS built for procurement teams that need a simpler way to run supplier quotations and reverse auctions without adopting a heavyweight enterprise procurement suite.
+**ReverseBid** is a B2B eSourcing SaaS built for procurement teams that need a simpler way to run supplier quotations and reverse auctions without adopting a heavyweight enterprise procurement suite.
 
 Buyers can create sourcing events, invite suppliers, collect quotations, run live reverse auctions, compare offers, award suppliers, and export a complete audit trail.
 
@@ -33,7 +33,7 @@ Export Results
 
 ---
 
-## Why BidFlow?
+## Why ReverseBid?
 
 Many procurement teams still manage sourcing through a combination of:
 
@@ -43,13 +43,13 @@ Many procurement teams still manage sourcing through a combination of:
 - Manually consolidated supplier quotations
 - Repeated negotiation rounds with little auditability
 
-BidFlow aims to replace that workflow with a lightweight, structured sourcing process.
+ReverseBid aims to replace that workflow with a lightweight, structured sourcing process.
 
 ### Core positioning
 
 > **The sourcing tool procurement teams graduate to after Excel.**
 
-BidFlow is intentionally **not** trying to become a full ERP or an SAP Ariba replacement.
+ReverseBid is intentionally **not** trying to become a full ERP or an SAP Ariba replacement.
 
 ---
 
@@ -121,7 +121,7 @@ Award decisions can include a written justification.
 
 ### Audit Trail
 
-BidFlow records important sourcing activity such as:
+ReverseBid records important sourcing activity such as:
 
 - Event creation
 - Event updates
@@ -162,7 +162,7 @@ Initial export target:
 
 ### Current / SLC Scope
 
-BidFlow's initial SLC focuses on:
+ReverseBid's initial SLC focuses on:
 
 - Authentication
 - Buyer organizations
@@ -278,7 +278,7 @@ Alternatives:
 
 ## Architecture
 
-BidFlow is designed as a **modular monolith**.
+ReverseBid is designed as a **modular monolith**.
 
 ```text
                     ┌─────────────────┐
@@ -370,7 +370,7 @@ Bid history must remain auditable.
 
 ## Multi-Tenancy
 
-BidFlow is multi-tenant.
+ReverseBid is multi-tenant.
 
 Every buyer-owned resource belongs to an organization.
 
@@ -450,7 +450,7 @@ Event state transitions must be handled through explicit server-side operations.
 
 ## Soft Close
 
-BidFlow supports anti-sniping auction extensions.
+ReverseBid supports anti-sniping auction extensions.
 
 Example:
 
@@ -495,8 +495,8 @@ Additional visibility modes may be introduced later.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/BidFlow.git
-cd BidFlow
+git clone https://github.com/<your-username>/ReverseBid.git
+cd ReverseBid
 ```
 
 ### 2. Install dependencies
@@ -556,7 +556,7 @@ http://localhost:3000
 
 ## Development Principles
 
-When contributing to BidFlow:
+When contributing to ReverseBid:
 
 1. Keep the architecture simple.
 2. Prefer a modular monolith over microservices.
@@ -644,7 +644,7 @@ Agents must not add major features such as payments, public marketplace function
 
 ## Product Philosophy
 
-BidFlow should win by being simpler than enterprise procurement platforms while being dramatically more structured than spreadsheets and chat messages.
+ReverseBid should win by being simpler than enterprise procurement platforms while being dramatically more structured than spreadsheets and chat messages.
 
 The goal is not:
 

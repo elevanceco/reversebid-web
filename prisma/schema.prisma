@@ -1,0 +1,360 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -----------------------------------------------------------------------------
+// ENUMS
+// -----------------------------------------------------------------------------
+
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  PROCUREMENT_USER
+  VIEWER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  REVOKED
+}
+
+// -----------------------------------------------------------------------------
+// BETTER AUTH CORE MODELS (Strict Better Auth schema conventions)
+// -----------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      Session[]
+  accounts      Account[]
+  
+  // ReverseBid relations
+  memberships   OrganizationMember[]
+  souringEvents SourcingEvent[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String    @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+// -----------------------------------------------------------------------------
+// BIDFLOW BUYER MODELS (Multi-tenancy & Procurement Master Data)
+// -----------------------------------------------------------------------------
+
+enum OrganizationType {
+  BUYER
+  SUPPLIER
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  countryCode String?  // e.g., "US", "ID", "SG"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     OrganizationMember[]
+  events      SourcingEvent[]
+  suppliers   Supplier[]           // Master directory of suppliers owned by this buyer
+  type        OrganizationType @default(BUYER) // 👈 Add this line
+}
+
+model OrganizationMember {
+  id             String           @id @default(cuid())
+  userId         String
+  organizationId String
+  role           OrganizationRole
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+// Buyer's private supplier directory (Master Data)
+model Supplier {
+  id             String   @id @default(cuid())
+  organizationId String
+
+  legalName      String
+  countryCode    String?
+  website        String?
+
+  contactName    String?
+  contactEmail   String?
+  contactPhone   String?
+  notes          String?
+
+  isArchived     Boolean  @default(false)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  eventSuppliers EventSupplier[]
+  sessions       SupplierEventSession[]
+  supplierInvitations EventSupplierInvitation[]
+
+  @@index([organizationId])
+  @@index([organizationId, legalName])
+}
+
+enum SourcingEventType {
+  RFQ
+  REVERSE_AUCTION
+}
+
+enum SourcingEventStatus {
+  DRAFT
+  SCHEDULED
+  OPEN
+  CLOSED
+  AWARDED
+  CANCELLED
+}
+
+enum SupplierBidVisibility {
+  OWN_RANK_ONLY
+  BEST_PRICE
+  HIDDEN
+}
+
+model SourcingEvent {
+  id             String              @id @default(cuid())
+  organizationId String
+
+  title          String
+  description    String?
+  referenceCode  String?
+
+  type           SourcingEventType
+  status         SourcingEventStatus @default(DRAFT)
+
+  currency       String
+  timezone       String
+
+  startsAt       DateTime?
+  endsAt         DateTime?
+
+  createdById    String
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy      User         @relation(fields: [createdById], references: [id])
+
+  lots           SourcingLot[]
+  auctionSettings AuctionSettings?
+  eventInvitations EventSupplierInvitation[]
+  eventSessions  SupplierEventSession[]
+  eventSuppliers EventSupplier[]
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([createdById])
+}
+
+model SourcingLot {
+  id          String   @id @default(cuid())
+  eventId     String
+
+  name        String
+  description String?
+  order       Int
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event       SourcingEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  items       SourcingItem[]
+
+  @@index([eventId])
+}
+
+model SourcingItem {
+  id            String   @id @default(cuid())
+  lotId         String
+
+  name          String
+  description   String?
+
+  quantity      Decimal
+  unit          String
+  specification String?
+  referencePrice Decimal?
+
+  order         Int
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  lot           SourcingLot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@index([lotId])
+}
+
+model AuctionSettings {
+  id                        String                @id @default(cuid())
+  eventId                   String                @unique
+
+  minimumDecrement          Decimal?
+
+  softCloseEnabled          Boolean               @default(true)
+  softCloseThresholdSeconds Int                   @default(120)
+  softCloseExtensionSeconds Int                   @default(120)
+  
+  supplierVisibility        SupplierBidVisibility @default(OWN_RANK_ONLY)
+
+  createdAt                 DateTime              @default(now())
+  updatedAt                 DateTime              @updatedAt
+
+  event                     SourcingEvent         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+// -----------------------------------------------------------------------------
+// SUPPLIER EVENT ACCESS MODELS (Capability-based auth)
+// -----------------------------------------------------------------------------
+
+enum EventSupplierStatus {
+  SELECTED
+  INVITED
+  ACCEPTED
+  DECLINED
+  REVOKED
+}
+
+model EventSupplier {
+  id         String              @id @default(cuid())
+  eventId    String
+  supplierId String
+
+  status     EventSupplierStatus @default(SELECTED)
+
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  event      SourcingEvent       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  supplier   Supplier            @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  invitation EventSupplierInvitation?
+
+  @@unique([eventId, supplierId])
+  @@index([eventId])
+  @@index([supplierId])
+}
+
+model EventSupplierInvitation {
+  id              String           @id @default(cuid())
+  eventSupplierId String   @unique
+  eventId         String
+  supplierId      String?          // Links back to buyer's Supplier directory record
+
+  companyName     String
+  contactName     String?
+  email           String
+
+  tokenHash       String           @unique // Cryptographic hash of the URL token
+
+  status          InvitationStatus @default(PENDING)
+
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  firstAccessedAt DateTime?
+  lastAccessedAt  DateTime?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  event           SourcingEvent    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  supplier        Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  eventSupplier   EventSupplier @relation(fields: [eventSupplierId], references: [id], onDelete: Cascade)
+  sessions        SupplierEventSession[]
+
+  @@index([eventId])
+  @@index([supplierId])
+  @@index([email])
+}
+
+model SupplierEventSession {
+  id             String   @id @default(cuid())
+  invitationId   String
+  eventId        String
+  supplierId     String?
+
+  sessionHash    String   @unique // Hash of the opaque session cookie
+
+  expiresAt      DateTime
+  revokedAt      DateTime?
+
+  createdAt      DateTime @default(now())
+  lastActiveAt   DateTime?
+
+  invitation     EventSupplierInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  event          SourcingEvent           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  supplier       Supplier?               @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+
+  @@index([invitationId])
+  @@index([eventId])
+  @@index([supplierId])
+}
+
