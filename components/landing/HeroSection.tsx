@@ -2,6 +2,8 @@
 
 import { motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { authClient } from "@/lib/auth/auth-client";
 import { ProductMockup } from "../ui/ProductMockup";
 
 // The coordinated background light trails
@@ -73,6 +75,10 @@ const AnimatedBackground = () => {
 };
 
 export default function HeroSection() {
+  // 👇 1. Grab the session data. Better Auth shares the cache with the Navbar!
+  const { data, isPending } = authClient.useSession();
+  const isLoggedIn = !!data?.user;
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
@@ -124,9 +130,23 @@ export default function HeroSection() {
             variants={itemVariants}
             className="flex flex-col sm:flex-row gap-4 items-center justify-center"
           >
-            <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-500 transition-colors w-full sm:w-auto shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
-              Start Free Trial
-            </button>
+            {/* 👇 2. Conditionally render the CTA based on auth state */}
+            {isPending ? (
+              <div className="h-[56px] w-full sm:w-[180px] bg-slate-800 rounded-lg animate-pulse" />
+            ) : isLoggedIn ? (
+              <Link href="/dashboard" className="w-full sm:w-auto">
+                <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-500 transition-colors w-full sm:w-auto shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
+                  Go to Dashboard
+                </button>
+              </Link>
+            ) : (
+              <Link href="/register" className="w-full sm:w-auto">
+                <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-500 transition-colors w-full sm:w-auto shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
+                  Start Free Trial
+                </button>
+              </Link>
+            )}
+
             <button className="border border-slate-700 bg-slate-900/50 backdrop-blur-sm text-slate-300 px-8 py-4 rounded-lg font-semibold hover:bg-slate-800 transition-colors w-full sm:w-auto">
               See How It Works
             </button>

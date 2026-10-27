@@ -152,7 +152,7 @@ export function AppHeader({ user, organization, role }: AppHeaderProps) {
       {/* Desktop Header Content */}
       <div className="flex flex-1 items-center justify-between gap-x-4 lg:gap-x-6 ml-4 md:ml-0">
         <div className="flex items-center">
-          <h1 className="text-lg font-semibold text-slate-900">
+          <h1 className="text-sm md:text-lg font-semibold text-slate-900">
             Welcome back, {firstName}
           </h1>
         </div>

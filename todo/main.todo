@@ -1,5 +1,4 @@
 UI:
-    ☐ navbar keren sih kalo di section paling atasnya masih dark mode, ikutin herosection, tapi pas redirect ke bagian section yang light mode, transition smooth dia ke warna light mode juga.
     ☐ How it works section bisa kasih animasi live demo aslinya nanti
     ☐ add loading screen global
 
@@ -16,6 +15,10 @@ Onboarding:
 
 Dashboard:
     ✔ jika user belum buat workspace, redirect ke onboarding @done(26-10-12 12:33)
-    ☐ sementara lagi pake mock data untuk data2 eventnya. nanti jangan lupa ganti @critical
     ✔ fix UI dashboard @started(26-10-12 18:26) @done(26-10-12 18:37) @lasted(11m44s)
 
+Suppliers:
+    ✔ supplier save action @done(26-10-27 18:37)
+    ✔ supplier table actions functional @started(26-10-27 18:38) @done(26-10-27 18:59) @lasted(21m57s)
+    ✔ supplier detail page @done(26-10-27 18:59)
+    ✔ supplier edit form @done(26-10-27 18:59)
